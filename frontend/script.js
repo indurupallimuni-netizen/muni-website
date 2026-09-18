@@ -1,194 +1,94 @@
-// Connect to backend
-const socket = io("http://localhost:5000");
+const chatMessages = document.getElementById("chatMessages");
+const chatForm = document.getElementById("chatForm");
+const messageInput = document.getElementById("messageInput");
+const typing = document.getElementById("typing");
+const clearChat = document.getElementById("clearChat");
 
+function addMessage(name, text, className) {
+    const message = document.createElement("div");
+    message.className = `message ${className}`;
 
-// Elements
-const usernameInput = document.getElementById("username");
-const messageInput = document.getElementById("message-input");
-const messageForm = document.getElementById("message-form");
-const messagesDiv = document.getElementById("messages");
-const status = document.getElementById("status");
-const emojiButton = document.getElementById("emoji-button");
+    const messageName = document.createElement("div");
+    messageName.className = "message-name";
+    messageName.textContent = name;
 
+    const messageText = document.createElement("div");
+    messageText.textContent = text;
 
-// Connection
-socket.on("connect", () => {
+    message.append(messageName, messageText);
+    chatMessages.appendChild(message);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+}
 
-    status.textContent = "🟢 Online";
+function getLocalReply(message) {
+    const text = message.toLowerCase();
 
-    console.log("Connected to server");
+    if (text.includes("hello") || text.includes("hi") || text.includes("హాయ్")) {
+        return "Hello! I am Muni AI. How can I help you today?";
+    }
 
+    if (text.includes("what can you do") || text.includes("help")) {
+        return "I can answer common questions, suggest ideas, and help you think through coding or project tasks. I work directly in this browser without an API key.";
+    }
+
+    if (text.includes("coding") || text.includes("code") || text.includes("website")) {
+        return "For coding help, share the goal and the error or code you are working with. I can help break it into clear steps.";
+    }
+
+    if (text.includes("idea") || text.includes("ideas")) {
+        return "Try building a personal dashboard, a portfolio chat assistant, or a small task planner with local browser storage.";
+    }
+
+    if (text.includes("thank")) {
+        return "You are welcome! Ask me anything else when you are ready.";
+    }
+
+    return `I received: "${message}". I am a local browser assistant, so I can reply without an API key. Try asking about coding, ideas, or what I can do.`;
+}
+
+async function sendMessage(message) {
+    const cleanMessage = message.trim();
+
+    if (!cleanMessage) {
+        return;
+    }
+
+    const welcome = document.querySelector(".welcome");
+    if (welcome) {
+        welcome.remove();
+    }
+
+    addMessage("You", cleanMessage, "user-message");
+    messageInput.value = "";
+    messageInput.disabled = true;
+    typing.classList.remove("hidden");
+
+    await new Promise((resolve) => setTimeout(resolve, 450));
+    addMessage("Muni AI", getLocalReply(cleanMessage), "ai-message");
+    typing.classList.add("hidden");
+    messageInput.disabled = false;
+    messageInput.focus();
+}
+
+function sendSuggestion(message) {
+    sendMessage(message);
+}
+
+chatForm.addEventListener("submit", (event) => {
+    event.preventDefault();
+    sendMessage(messageInput.value);
 });
 
-
-// Disconnection
-socket.on("disconnect", () => {
-
-    status.textContent = "🔴 Offline";
-
+clearChat.addEventListener("click", () => {
+    chatMessages.innerHTML = `
+        <div class="welcome">
+            <div class="big-ai">🤖</div>
+            <h1>Hi! I'm Muni AI 👋</h1>
+            <p>Ask me anything. I'm here to help you.</p>
+            <div class="suggestions">
+                <button type="button" onclick="sendSuggestion('What can you do?')">💡 What can you do?</button>
+                <button type="button" onclick="sendSuggestion('Help me with coding')">💻 Help me with coding</button>
+                <button type="button" onclick="sendSuggestion('Give me some ideas')">🚀 Give me some ideas</button>
+            </div>
+        </div>`;
 });
-
-
-// Load previous messages
-async function loadMessages() {
-
-    try {
-
-        const response = await fetch(
-            "http://localhost:5000/api/messages"
-        );
-
-        const messages = await response.json();
-
-        messagesDiv.innerHTML = "";
-
-        messages.forEach(message => {
-
-            displayMessage(message);
-
-        });
-
-    } catch (error) {
-
-        console.error(
-            "Could not load messages:",
-            error
-        );
-
-    }
-
-}
-
-
-// Display message
-function displayMessage(data) {
-
-    const messageElement =
-        document.createElement("div");
-
-    messageElement.className = "message";
-
-
-    const time = new Date(data.created_at)
-        .toLocaleTimeString([], {
-            hour: "2-digit",
-            minute: "2-digit"
-        });
-
-
-    messageElement.innerHTML = `
-
-        <strong>
-            ${escapeHTML(data.username)}
-        </strong>
-
-        <div class="message-text">
-            ${escapeHTML(data.message)}
-        </div>
-
-        <span class="message-time">
-            ${time}
-        </span>
-
-    `;
-
-
-    messagesDiv.appendChild(messageElement);
-
-
-    // Scroll to bottom
-    messagesDiv.scrollTop =
-        messagesDiv.scrollHeight;
-
-}
-
-
-// Send message
-messageForm.addEventListener(
-    "submit",
-    function (event) {
-
-        event.preventDefault();
-
-
-        const username =
-            usernameInput.value.trim();
-
-        const message =
-            messageInput.value.trim();
-
-
-        if (!username) {
-
-            alert("Please enter your name");
-
-            usernameInput.focus();
-
-            return;
-        }
-
-
-        if (!message) {
-
-            return;
-        }
-
-
-        // Send to backend
-        socket.emit(
-            "send_message",
-            {
-                username: username,
-                message: message
-            }
-        );
-
-
-        // Clear input
-        messageInput.value = "";
-
-        messageInput.focus();
-
-    }
-);
-
-
-// Receive message
-socket.on(
-    "receive_message",
-    function (data) {
-
-        displayMessage(data);
-
-    }
-);
-
-
-// Emoji button
-emojiButton.addEventListener(
-    "click",
-    function () {
-
-        messageInput.value += " 😊";
-
-        messageInput.focus();
-
-    }
-);
-
-
-// Security
-function escapeHTML(text) {
-
-    const div =
-        document.createElement("div");
-
-    div.textContent = text;
-
-    return div.innerHTML;
-
-}
-
-
-// Start
-loadMessages();

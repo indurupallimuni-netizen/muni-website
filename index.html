@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Muni AI Chat</title>
+    <link rel="stylesheet" href="frontend/style.css">
+</head>
+<body>
+<div class="app">
+    <header class="header">
+        <div class="brand">
+            <div class="ai-logo">🤖</div>
+            <div>
+                <h2>Muni AI</h2>
+                <span id="status">● Online</span>
+            </div>
+        </div>
+        <button id="clearChat" class="clear-btn" type="button">🗑️ Clear</button>
+    </header>
+
+    <main id="chatMessages" class="chat-messages">
+        <div class="welcome">
+            <div class="big-ai">🤖</div>
+            <h1>Hi! I'm Muni AI 👋</h1>
+            <p>Ask me anything. I'm here to help you.</p>
+            <div class="suggestions">
+                <button type="button" onclick="sendSuggestion('What can you do?')">💡 What can you do?</button>
+                <button type="button" onclick="sendSuggestion('Help me with coding')">💻 Help me with coding</button>
+                <button type="button" onclick="sendSuggestion('Give me some ideas')">🚀 Give me some ideas</button>
+            </div>
+        </div>
+    </main>
+
+    <div id="typing" class="typing hidden">🤖 AI is typing...</div>
+    <form id="chatForm" class="chat-input">
+        <button type="button" class="icon-btn">😊</button>
+        <input type="text" id="messageInput" placeholder="Message Muni AI..." autocomplete="off">
+        <button type="submit" class="send-btn">➤</button>
+    </form>
+</div>
+<script src="frontend/script.js"></script>
+</body>
+</html>
