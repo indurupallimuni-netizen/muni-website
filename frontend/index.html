@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Muni Chat Board</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Socket.IO -->
+    <script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
+</head>
+
+<body>
+
+    <div class="chat-app">
+
+        <!-- Header -->
+        <header class="chat-header">
+            <div class="profile">
+                <div class="avatar">M</div>
+
+                <div>
+                    <h2>Muni Chat Board</h2>
+                    <span id="status">Connecting...</span>
+                </div>
+            </div>
+        </header>
+
+
+        <!-- Username -->
+        <div class="username-section">
+
+            <label>Your Name</label>
+
+            <input
+                type="text"
+                id="username"
+                placeholder="Enter your name"
+                autocomplete="off"
+            >
+
+        </div>
+
+
+        <!-- Messages -->
+        <main id="messages" class="messages">
+
+            <div class="welcome-message">
+                <div class="welcome-icon">💬</div>
+
+                <h3>Welcome to Muni Chat</h3>
+
+                <p>
+                    Start chatting with everyone.
+                </p>
+            </div>
+
+        </main>
+
+
+        <!-- Message Input -->
+        <form id="message-form" class="message-form">
+
+            <button
+                type="button"
+                class="icon-button"
+                id="emoji-button"
+                title="Emoji"
+            >
+                😊
+            </button>
+
+            <input
+                type="text"
+                id="message-input"
+                placeholder="Type a message..."
+                autocomplete="off"
+            >
+
+            <button
+                type="submit"
+                class="send-button"
+            >
+                ➤
+            </button>
+
+        </form>
+
+    </div>
+
+
+    <script src="script.js"></script>
+
+</body>
+</html>
